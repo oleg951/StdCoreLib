@@ -3,3 +3,7 @@
 Makefile
 *.user*
 *.*save*
+build
+bin
+.vscode
+
