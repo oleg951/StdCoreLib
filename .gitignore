@@ -5,5 +5,6 @@ Makefile
 *.*save*
 build
 bin
-.vscode
+.*
 
+.prettierrc
