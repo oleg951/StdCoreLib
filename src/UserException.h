@@ -1,8 +1,8 @@
 #pragma once
 
 #include <exception>
-#include <string_view>
 #include <string>
+#include <string_view>
 
 /**
  * @brief UserException is the user exception. It contains the name of function that threw exception, the user message, the debug message and
@@ -11,7 +11,18 @@
  */
 class UserException : public std::exception {
    public:
-   /**
+    /**
+    * @brief Construct a new UserException object.
+    * 
+    * @param _usrMsg - user message.
+    * @param _dbMsg - debug message. 
+    * @param _funcInfo - function name.
+    */
+    explicit UserException(const std::string_view &_usrMsg,
+                           const std::string_view &_dbMsg,
+                           const std::string_view &_funcInfo) noexcept;
+
+    /**
     * @brief Construct a new UserException object.
     * 
     * @param _usrMsg - user message.
@@ -19,12 +30,14 @@ class UserException : public std::exception {
     * @param _funcInfo - function name.
     * @param _exception - nested exception.
     */
+    template <class T,
+              typename = typename std::enable_if_t<std::is_base_of_v<std::exception, std::decay_t<T>>>>
     explicit UserException(const std::string_view &_usrMsg,
                            const std::string_view &_dbMsg,
                            const std::string_view &_funcInfo,
-                           std::exception *_exception = nullptr) noexcept;
+                           T &&_exception) noexcept;
     /**
-     * @brief Destroy the UserException object.
+     * @brief Destroy the UserException object
      * 
      */
     virtual ~UserException() noexcept;
@@ -79,7 +92,7 @@ class UserException : public std::exception {
     std::exception *nestedException() const noexcept;
 
    private:
-   /**
+    /**
     * @brief Information about the exception.
     * 
     */
@@ -112,3 +125,14 @@ class UserException : public std::exception {
      */
     std::string toString(int _level = 0) const;
 };
+
+template <class T, typename>
+UserException::UserException(const std::string_view &_usrMsg,
+                             const std::string_view &_dbMsg,
+                             const std::string_view &_funcInfo,
+                             T &&_exception) noexcept : std::exception(),
+                                                        m_usrMsg(_usrMsg),
+                                                        m_dbMsg(_dbMsg),
+                                                        m_funcInfo(_funcInfo) {
+    m_nestedException = new std::decay_t<T>(std::forward<T>(_exception));
+}

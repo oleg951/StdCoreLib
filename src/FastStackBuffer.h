@@ -1,5 +1,7 @@
 #pragma once
 
+#include "UserException.h"
+
 #include <array>
 #include <string_view>
 
@@ -56,10 +58,17 @@ class FastStackBuffer {
      */
     bool push(T &&_val) noexcept;
     /**
-     * @brief Removes the top item from the stack and returns it. If this stack is empty return the default construct object.
-     *
+     * @brief Removes the top item from the stack and returns it.
+     * @throw UserException - if stack is empty;
      */
-    T pop() noexcept;
+    T pop();
+
+    /**
+     * @brief Return top item of the stack.
+     * @throw UserException - if stack is empty;
+     */
+    T &top() const;
+
 
     /**
      * @brief Returns true if the stack contains no items; otherwise returns false.
@@ -127,12 +136,23 @@ bool FastStackBuffer<T, N>::push(T &&_val) noexcept {
 }
 
 template <class T, size_t N>
-T FastStackBuffer<T, N>::pop() noexcept {
+T FastStackBuffer<T, N>::pop() {
     if (m_nextIt == m_buffer.begin()) {
-        return T();
+         throw UserException("Stack is empty", "isEmpty()", __PRETTY_FUNCTION__);
     }
 
     return std::move(*(--m_nextIt));
+}
+
+template <class T, size_t N>
+T& FastStackBuffer<T, N>::top() const
+{
+    if (isEmpty()) {
+        throw UserException("Stack is empty", "isEmpty()", __PRETTY_FUNCTION__);
+    }
+
+    auto prevIt = m_nextIt;
+    return *(--prevIt);
 }
 
 template <class T, size_t N>
@@ -142,7 +162,7 @@ constexpr bool FastStackBuffer<T, N>::isEmpty() const noexcept {
 
 template <class T, size_t N>
 constexpr size_t FastStackBuffer<T, N>::size() const noexcept {
-    return m_buffer.size();
+    return m_nextIt - m_buffer.begin();
 }
 
 template <class T, size_t N>
@@ -152,5 +172,5 @@ constexpr size_t FastStackBuffer<T, N>::capacity() const noexcept {
 
 template <class T, size_t N>
 constexpr bool FastStackBuffer<T, N>::isFull() const noexcept {
-    return m_buffer.size() == N;
+    return size() == N;
 }

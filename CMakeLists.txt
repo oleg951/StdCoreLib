@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 
 project(StdCore 
-        VERSION 1.0.0
+        VERSION 1.1.0
         DESCRIPTION "The core library defines the base componets"
         LANGUAGES CXX)
 
