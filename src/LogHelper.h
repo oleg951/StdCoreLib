@@ -27,7 +27,7 @@ class LogHelper {
      * 
      * @param _logLevel - login level.
      */
-    LogHelper(LogLevel _logLevel = LogLevel::Warning);
+    explicit LogHelper(LogLevel _logLevel = LogLevel::Warning);
     /**
      * @brief Destroy the LogHelper object
      * 

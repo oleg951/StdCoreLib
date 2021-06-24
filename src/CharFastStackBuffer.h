@@ -1,29 +1,23 @@
 #ifndef CHARFASTSTACKBUFFER_H
 #define CHARFASTSTACKBUFFER_H
 
-#include <iosfwd>
-
 #include "FastStackBuffer.h"
+
 #include "UserException.h"
+
+#include <iosfwd>
+#include <iterator>
 
 /**
  * @brief CharFastStackBuffer is class is stack of chars;
- * 
+ *
  * @tparam N - stack size.
  */
 template <size_t N = 1024>
 class CharFastStackBuffer : public FastStackBuffer<wchar_t, N> {
-   public:
-   /**
-    * @brief Construct a new Char Fast Stack Buffer object.
-    * 
-    */
-    explicit CharFastStackBuffer() noexcept;
-
    private:
     /**
      * @brief Write the values of this stack to the stream.
-     *
      * @param _os - output stream.
      * @param _buff - instace of the CharFastStackBuffer.
      */
@@ -40,17 +34,14 @@ CharFastStackBuffer<N> &operator<<(CharFastStackBuffer<N> &_buffer, const std::e
 
 template <size_t Size>
 std::wostream &operator<<(std::wostream &_os, const CharFastStackBuffer<Size> &_buff) {
-    for (auto &&begin = _buff.m_buffer.cbegin(); begin != _buff.m_nextIt; ++begin) {
-        _os << *begin;
-    }
+    std::copy(_buff.m_buffer.cbegin(), _buff.m_buffer.cend(), std::ostreambuf_iterator<wchar_t>(_os));
+
     return _os;
 }
 
 template <size_t N>
 CharFastStackBuffer<N> &operator<<(CharFastStackBuffer<N> &_buffer, const std::string_view &_value) {
-    for (auto cit = _value.cbegin(); cit != _value.cend(); ++cit) {
-        _buffer.push(*cit);
-    }
+    std::copy(_value.cbegin(), _value.cend(), _buffer.outputIt());
 
     return _buffer;
 }
@@ -63,10 +54,6 @@ CharFastStackBuffer<N> &operator<<(CharFastStackBuffer<N> &_buffer, V _val) {
     _buffer << std::to_string(_val);
 
     return _buffer;
-}
-
-template <size_t N>
-CharFastStackBuffer<N>::CharFastStackBuffer() noexcept : FastStackBuffer<wchar_t, N>() {
 }
 
 #endif  // CHARFASTSTACKBUFFER_H
