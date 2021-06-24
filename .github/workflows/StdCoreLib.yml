@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Build and Test
 
 # Controls when the action will run. 
 on:
@@ -33,4 +33,8 @@ jobs:
 
       - name: Build
       # Build your program with the given configuration
-        run: cmake --build build -j2
+        run: make -C ${{github.workspace}}/build VERBOSE=1 -j2
+        
+      - name: Test
+      # GoogleTest
+        run: ctest -V
