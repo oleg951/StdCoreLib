@@ -41,7 +41,7 @@ std::wostream &operator<<(std::wostream &_os, const CharFastStackBuffer<Size> &_
 
 template <size_t N>
 CharFastStackBuffer<N> &operator<<(CharFastStackBuffer<N> &_buffer, const std::string_view &_value) {
-    std::copy(_value.cbegin(), _value.cend(), _buffer.outputIt());
+    std::copy(_value.cbegin(), _value.cend(), FastStackBufferOutputIterator(_buffer));
 
     return _buffer;
 }

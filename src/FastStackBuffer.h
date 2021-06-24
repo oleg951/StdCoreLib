@@ -8,24 +8,18 @@
 template<class T, std::size_t N>
 class FastStackBuffer;
 
-#warning TODO
-//TODO Не делать приватным
 template<class T, std::size_t N = 1024>
-class OutputIterator {
-private:
-    FastStackBuffer<T, N> *m_instance;
+class FastStackBufferOutputIterator {
+public:
+    explicit  FastStackBufferOutputIterator(FastStackBuffer<T, N> &_stackBuffer): m_instance(&_stackBuffer){}
 
+private:
     struct Proxy {
-        explicit Proxy(OutputIterator<T, N> *_it) : m_oIt(_it) {}
+        FastStackBufferOutputIterator *m_oIt;
 
         template<class Value_t>
         void operator=(Value_t &&_lvalue) { m_oIt->m_instance->push(std::forward<Value_t>(_lvalue)); }
-
-    private:
-        OutputIterator *m_oIt;
     };
-
-    friend class FastStackBuffer<T, N>;
 
 public:
     using iterator_category = std::output_iterator_tag;
@@ -36,13 +30,16 @@ public:
     [[nodiscard]]
     Proxy operator*() noexcept { return Proxy{this}; }
 
-    OutputIterator &operator++() noexcept { return *this; }
+    FastStackBufferOutputIterator &operator++() noexcept { return *this; }
 
-    OutputIterator &operator++(int) noexcept { return *this; }
+    FastStackBufferOutputIterator &operator++(int) noexcept { return *this; }
 
-    bool operator==([[maybe_unused]]const OutputIterator &_outIt) const noexcept { return false; }
+    bool operator==([[maybe_unused]]const FastStackBufferOutputIterator &_outIt) const noexcept { return false; }
 
-    bool operator!=([[maybe_unused]]const OutputIterator &_outIt) const noexcept { return true; }
+    bool operator!=([[maybe_unused]]const FastStackBufferOutputIterator &_outIt) const noexcept { return true; }
+
+private:
+    FastStackBuffer<T, N> *m_instance;
 };
 
 /**
@@ -116,8 +113,6 @@ public:
      */
     [[nodiscard]]
     inline constexpr bool isFull() const noexcept;
-
-    OutputIterator<T, N> outputIt() const noexcept;
 
 protected:
     /**
