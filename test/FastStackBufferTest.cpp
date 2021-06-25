@@ -8,8 +8,9 @@ protected:
 };
 
 TEST_F(Fixture, stack_overflow_test) {
-    ASSERT_THROW(stackBuffer.pop(), UserException);
-    ASSERT_THROW(stackBuffer.top(), UserException);
+    [[maybe_unused]] int tmp = 0;
+    ASSERT_THROW( tmp = stackBuffer.pop(), UserException);
+    ASSERT_THROW(tmp = stackBuffer.top(), UserException);
 
     for (int i = 0; i < 100; ++i) {
         stackBuffer.push(i);

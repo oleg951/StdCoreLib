@@ -9,7 +9,7 @@ LogHelper::LogHelper(LogLevel _logLevel): m_logLevel(_logLevel) {
 }
 
 LogHelper::~LogHelper() {
-    std::wcerr << m_buffer << std::endl;
+    std::cerr << m_buffer << std::endl;
 }
 
 std::string LogHelper::timestamp() const noexcept {
@@ -22,7 +22,7 @@ std::string LogHelper::timestamp() const noexcept {
     return timeStr;
 }
 
-std::wostream &LogHelper::stream() {
+std::basic_ostream<char> &LogHelper::stream() {
     if (!m_ostream.has_value()) {
         m_ostream.emplace(m_buffer);
     }

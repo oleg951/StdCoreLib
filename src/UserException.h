@@ -10,7 +10,7 @@
  * 
  */
 class UserException : public std::exception {
-   public:
+public:
     /**
     * @brief Construct a new UserException object.
     * 
@@ -30,12 +30,13 @@ class UserException : public std::exception {
     * @param _funcInfo - function name.
     * @param _exception - nested exception.
     */
-    template <class T,
-              typename = typename std::enable_if_t<std::is_base_of_v<std::exception, std::decay_t<T>>>>
+    template<class T,
+            typename = typename std::enable_if_t<std::is_base_of_v<std::exception, std::decay_t<T>>>>
     explicit UserException(const std::string_view &_usrMsg,
                            const std::string_view &_dbMsg,
                            const std::string_view &_funcInfo,
                            T &&_exception) noexcept;
+
     /**
      * @brief Destroy the UserException object
      * 
@@ -53,6 +54,7 @@ class UserException : public std::exception {
      * 
      */
     UserException(const UserException &_exception) = default;
+
     /**
      * @brief Copy operator.
      * 
@@ -64,6 +66,7 @@ class UserException : public std::exception {
      * 
      */
     UserException(UserException &&_exception) noexcept = default;
+
     /**
      * @brief Move operator.
      * 
@@ -74,24 +77,27 @@ class UserException : public std::exception {
      * @brief Return the user message.
      * 
      */
-    const std::string_view usrMsg() const noexcept;
+    std::string_view usrMsg() const noexcept;
+
     /**
      * @brief Return the debug message.
      * 
      */
-    const std::string_view dbMsg() const noexcept;
+    std::string_view dbMsg() const noexcept;
+
     /**
      * @brief Return the function name.
      * 
      */
-    const std::string_view funcInfo() const noexcept;
+    std::string_view funcInfo() const noexcept;
+
     /**
      * @brief Return the nested exception.
      * 
      */
     std::exception *nestedException() const noexcept;
 
-   private:
+private:
     /**
     * @brief Information about the exception.
     * 
@@ -123,10 +129,10 @@ class UserException : public std::exception {
      * @brief Returns information about the exception, taking into account the nested level.
      * 
      */
-    std::string toString(int _level = 0) const;
+    std::string toString() const;
 };
 
-template <class T, typename>
+template<class T, typename>
 UserException::UserException(const std::string_view &_usrMsg,
                              const std::string_view &_dbMsg,
                              const std::string_view &_funcInfo,

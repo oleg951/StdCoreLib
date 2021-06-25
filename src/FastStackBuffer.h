@@ -8,15 +8,31 @@
 template<class T, std::size_t N>
 class FastStackBuffer;
 
+/*!
+ * @brief Output iterator.
+ * @tparam T - stack element type.
+ * @tparam N - the stack size.
+ */
 template<class T, std::size_t N = 1024>
 class FastStackBufferOutputIterator {
 public:
+    /*!
+     * @brief Constructor.
+     * @param _stackBuffer - stack implementation.
+     */
     explicit  FastStackBufferOutputIterator(FastStackBuffer<T, N> &_stackBuffer): m_instance(&_stackBuffer){}
 
 private:
+    //! Proxy class.
     struct Proxy {
+        //! Output iterator.
         FastStackBufferOutputIterator *m_oIt;
 
+        /*!
+         * @brief The assignment operator.
+         * @tparam Value_t - stack element type
+         * @param _lvalue - lvalue.
+         */
         template<class Value_t>
         void operator=(Value_t &&_lvalue) { m_oIt->m_instance->push(std::forward<Value_t>(_lvalue)); }
     };
@@ -39,10 +55,11 @@ public:
     bool operator!=([[maybe_unused]]const FastStackBufferOutputIterator &_outIt) const noexcept { return true; }
 
 private:
+    //! The instance of stack buffer.
     FastStackBuffer<T, N> *m_instance;
 };
 
-/**
+/*!
  * @brief The FastStackBuffer class is a simple stack implementation.
  * @tparam T - stack element type.
  * @tparam N - the stack size.
@@ -63,22 +80,22 @@ public:
      * @brief Push a value onto the stack. Returns true if the operation is successful; otherwise returns false.
      * @throw UserException - if stack is full.
      */
-    bool push(const T &_val);
+    void push(const T &_val);
 
     /**
      * @brief Push a value onto the stack. Returns true if the operation is successful; otherwise returns false.
      * @throw UserException - if stack is full.
      */
-    bool push(T &&_val);
+    void push(T &&_val);
 
-    /**
+    /*!
      * @brief Removes the top item from the stack and returns it.
      * @throw UserException - if stack is empty;
      */
     [[nodiscard]]
     T pop();
 
-    /**
+    /*!
      * @brief Return top item of the stack.
      * @throw UserException - if stack is empty;
      */
@@ -86,49 +103,43 @@ public:
     T &top() const;
 
 
-    /**
+    /*!
      * @brief Returns true if the stack contains no items; otherwise returns false.
-     *
      */
     [[nodiscard]]
     inline constexpr bool isEmpty() const noexcept;
 
-    /**
+    /*!
      * @brief Returns the size of this stack.
-     *
      */
     [[nodiscard]]
     inline constexpr Distance_t size() const noexcept;
 
-    /**
+    /*!
      * @brief Returns the capacity of this stack.
-     *
      */
     [[nodiscard]]
     inline constexpr size_t capacity() const noexcept;
 
-    /**
+    /*!
      * @brief Returns true if the stack is full; otherwise returns false.
-     *
      */
     [[nodiscard]]
     inline constexpr bool isFull() const noexcept;
 
 protected:
-    /**
+    /*!
      * @brief Underlying array.
-     *
      */
     std::array<T, N> m_buffer;
-    /**
+    /*!
      * @brief End of stack iterator.
-     *
      */
     array_iterator_t m_nextIt{m_buffer.begin()};
 };
 
 template<class T, size_t N>
-bool FastStackBuffer<T, N>::push(const T &_val) {
+void FastStackBuffer<T, N>::push(const T &_val) {
     if (isFull()) {
         throw UserException("Stack is full", "isFull()", __PRETTY_FUNCTION__);
     }
@@ -136,13 +147,10 @@ bool FastStackBuffer<T, N>::push(const T &_val) {
     *m_nextIt = _val;
 
     ++m_nextIt;
-
-    return true;
-
 }
 
 template<class T, size_t N>
-bool FastStackBuffer<T, N>::push(T &&_val) {
+void FastStackBuffer<T, N>::push(T &&_val) {
     if (isFull()) {
         throw UserException("Stack is full", "isFull()", __PRETTY_FUNCTION__);
     }
@@ -150,8 +158,6 @@ bool FastStackBuffer<T, N>::push(T &&_val) {
     *m_nextIt = std::move(_val);
 
     ++m_nextIt;
-
-    return true;
 }
 
 template<class T, size_t N>
