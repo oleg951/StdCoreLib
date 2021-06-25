@@ -2,4 +2,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # StdCoreLib
-The core library defines the core components (e.g., user exception, logger). The library uses the c ++ std library.
+___
+The core library defines the core components (e.g., user exception, logger, stack buffer). 
+The library uses the c++ std library.
